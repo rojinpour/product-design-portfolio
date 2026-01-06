@@ -1,0 +1,972 @@
+<!--
+Rojin Pourkhomami — Product Designer Portfolio (single-file site)
+Save as: index.html
+Run: Right click → "Open with Live Server" (or open in browser)
+
+No external libraries. Pure HTML/CSS/JS with:
+- animated gradient + noise
+- floating SVG blobs
+- parallax + scroll reveal
+- magnetic buttons
+- cursor aura
+- project cards with hover physics-ish tilt
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rojin Pourkhomami — Product Designer</title>
+  <meta name="description" content="Portfolio of Rojin Pourkhomami, Product Designer." />
+  <style>
+    :root{
+      --bg:#07070a;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.09);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.66);
+      --line: rgba(255,255,255,.12);
+      --shadow: 0 24px 80px rgba(0,0,0,.55);
+      --radius: 22px;
+      --max: 1140px;
+
+      --a: #7c3aed;  /* violet */
+      --b: #06b6d4;  /* cyan */
+      --c: #f59e0b;  /* amber */
+      --d: #ec4899;  /* pink */
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      color:var(--text);
+      background: var(--bg);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      overflow-x:hidden;
+    }
+
+    /* ===== Background: animated gradient + subtle grain ===== */
+    .bg{
+      position:fixed; inset:0; z-index:-3;
+      background:
+        radial-gradient(1000px 700px at 20% 10%, rgba(124,58,237,.25), transparent 55%),
+        radial-gradient(900px 700px at 80% 0%, rgba(6,182,212,.22), transparent 55%),
+        radial-gradient(900px 700px at 70% 90%, rgba(236,72,153,.20), transparent 55%),
+        radial-gradient(900px 700px at 10% 85%, rgba(245,158,11,.18), transparent 55%),
+        linear-gradient(180deg, #07070a 0%, #07070a 40%, #060611 100%);
+      filter:saturate(1.05);
+    }
+    .bg::before{
+      content:"";
+      position:absolute; inset:-40%;
+      background:
+        conic-gradient(from 180deg at 50% 50%,
+          rgba(124,58,237,.25),
+          rgba(6,182,212,.22),
+          rgba(245,158,11,.18),
+          rgba(236,72,153,.22),
+          rgba(124,58,237,.25)
+        );
+      filter: blur(90px);
+      opacity:.22;
+      animation: drift 18s ease-in-out infinite alternate;
+      transform: translate3d(0,0,0);
+    }
+    @keyframes drift{
+      0%{ transform: translate(-2%, -2%) rotate(0deg); }
+      50%{ transform: translate(2%, 1%) rotate(25deg); }
+      100%{ transform: translate(1%, 3%) rotate(-20deg); }
+    }
+
+    .grain{
+      position:fixed; inset:0; z-index:-2;
+      pointer-events:none;
+      opacity:.09;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+      background-size: 250px 250px;
+      mix-blend-mode: overlay;
+    }
+
+    /* ===== Cursor aura ===== */
+    .aura{
+      position:fixed;
+      width: 260px; height: 260px;
+      left:0; top:0;
+      transform: translate(-50%, -50%);
+      border-radius: 999px;
+      pointer-events:none;
+      z-index:-1;
+      background: radial-gradient(circle at 30% 30%,
+        rgba(124,58,237,.28),
+        rgba(6,182,212,.18),
+        rgba(236,72,153,.12),
+        transparent 65%);
+      filter: blur(14px);
+      opacity:.85;
+      transition: opacity .2s ease;
+    }
+    @media (hover:none){
+      .aura{ display:none; }
+    }
+
+    /* ===== Layout ===== */
+    .wrap{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 22px 18px 80px;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: rgba(7,7,10,.45);
+    }
+    .nav{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    .brand{
+      display:flex; align-items:center; gap: 12px;
+      text-decoration:none;
+      color: var(--text);
+      min-width: 200px;
+    }
+    .mark{
+      width: 36px; height: 36px;
+      border-radius: 14px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 50%),
+        linear-gradient(135deg, rgba(124,58,237,.9), rgba(6,182,212,.85));
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 18px 60px rgba(124,58,237,.18);
+    }
+    .brand b{ font-weight: 760; letter-spacing:.2px; }
+    .brand span{ display:block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .navlinks{
+      display:flex; align-items:center; gap: 10px; flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .chip{
+      text-decoration:none;
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease, color .15s ease;
+      will-change: transform;
+    }
+    .chip:hover{
+      color: var(--text);
+      border-color: rgba(255,255,255,.22);
+      background: rgba(255,255,255,.06);
+      transform: translateY(-1px);
+    }
+    .chip.primary{
+      color: rgba(255,255,255,.95);
+      border-color: rgba(124,58,237,.55);
+      background: rgba(124,58,237,.18);
+    }
+
+    /* ===== Hero ===== */
+    .hero{
+      padding: 70px 0 28px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+      align-items:stretch;
+    }
+    @media (max-width: 900px){
+      .hero{ grid-template-columns: 1fr; padding-top: 42px; }
+    }
+
+    .panel{
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .heroMain{
+      padding: 28px 22px;
+    }
+    .kicker{
+      display:inline-flex;
+      gap: 10px; align-items:center;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .dot{
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(34,197,94,.9);
+      box-shadow: 0 0 0 6px rgba(34,197,94,.14);
+    }
+    h1{
+      font-size: clamp(34px, 4.5vw, 56px);
+      line-height: 1.02;
+      margin: 16px 0 10px;
+      letter-spacing: -0.8px;
+    }
+    .gradText{
+      background: linear-gradient(90deg, rgba(124,58,237,1), rgba(6,182,212,1), rgba(236,72,153,1));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .lead{
+      color: var(--muted);
+      font-size: 15.5px;
+      line-height: 1.55;
+      margin: 12px 0 18px;
+      max-width: 62ch;
+    }
+
+    .ctaRow{
+      display:flex; gap: 10px; flex-wrap:wrap; align-items:center;
+      margin-top: 18px;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      text-decoration:none;
+      font-weight: 640;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+      will-change: transform;
+    }
+    .btn:hover{
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,.22);
+      background: rgba(255,255,255,.07);
+    }
+    .btn.primary{
+      border-color: rgba(124,58,237,.55);
+      background: rgba(124,58,237,.18);
+    }
+    .btn .arrow{
+      width: 10px; height: 10px; display:inline-block;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(-45deg);
+      margin-left: 2px;
+    }
+
+    /* ===== Right hero: “skills” / “stats” ===== */
+    .heroSide{
+      padding: 16px;
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+    }
+    .miniCard{
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      padding: 14px;
+      position:relative;
+      overflow:hidden;
+    }
+    .miniCard::before{
+      content:"";
+      position:absolute; inset:-1px;
+      background: radial-gradient(500px 160px at 20% 20%, rgba(6,182,212,.18), transparent 60%),
+                  radial-gradient(500px 160px at 90% 80%, rgba(124,58,237,.16), transparent 65%);
+      pointer-events:none;
+    }
+    .miniTop{
+      display:flex; justify-content:space-between; align-items:flex-start; gap: 10px;
+      position:relative;
+    }
+    .badge{
+      font-size: 12px;
+      color: rgba(255,255,255,.78);
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      padding: 8px 10px;
+      border-radius: 999px;
+    }
+    .miniTitle{ font-weight: 740; letter-spacing:.2px; }
+    .miniText{ margin-top: 6px; color: var(--muted); font-size: 13px; line-height: 1.5; position:relative; }
+    .pillRow{
+      margin-top: 10px;
+      display:flex; flex-wrap:wrap; gap: 8px;
+      position:relative;
+    }
+    .pill{
+      font-size: 12px;
+      color: rgba(255,255,255,.74);
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      padding: 7px 9px;
+      border-radius: 999px;
+    }
+
+    /* ===== Sections ===== */
+    section{
+      margin-top: 16px;
+      padding: 22px;
+    }
+    .sectionTitle{
+      display:flex; align-items:flex-end; justify-content:space-between; gap: 12px;
+      margin-bottom: 12px;
+    }
+    .sectionTitle h2{
+      margin:0;
+      font-size: 18px;
+      letter-spacing:.2px;
+    }
+    .sectionTitle p{
+      margin:0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* ===== Projects grid ===== */
+    .projects{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 980px){ .projects{ grid-template-columns: 1fr; } }
+
+    .card{
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      padding: 14px;
+      position:relative;
+      overflow:hidden;
+      transform-style: preserve-3d;
+      transition: transform .15s ease, border-color .15s ease, background .15s ease;
+      will-change: transform;
+    }
+    .card:hover{
+      border-color: rgba(255,255,255,.22);
+      background: rgba(255,255,255,.045);
+    }
+    .thumb{
+      height: 130px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.12);
+      background:
+        radial-gradient(250px 140px at 25% 25%, rgba(124,58,237,.32), transparent 60%),
+        radial-gradient(250px 140px at 80% 80%, rgba(6,182,212,.26), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      position:relative;
+      overflow:hidden;
+    }
+    .thumb::after{
+      content:"";
+      position:absolute; inset:-60%;
+      background: conic-gradient(from 180deg, rgba(236,72,153,.20), rgba(245,158,11,.18), rgba(6,182,212,.18), rgba(124,58,237,.22), rgba(236,72,153,.20));
+      filter: blur(40px);
+      animation: thumbSpin 10s linear infinite;
+      opacity:.75;
+    }
+    @keyframes thumbSpin{
+      from{ transform: rotate(0deg); }
+      to{ transform: rotate(360deg); }
+    }
+    .card h3{
+      margin: 12px 0 6px;
+      font-size: 14px;
+      letter-spacing:.2px;
+    }
+    .card p{
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .meta{
+      margin-top: 10px;
+      display:flex; flex-wrap:wrap; gap: 8px;
+    }
+    .tag{
+      font-size: 12px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.72);
+    }
+    .card .actions{
+      margin-top: 12px;
+      display:flex; gap: 10px; flex-wrap:wrap;
+    }
+
+    /* ===== About + Contact ===== */
+    .twoCol{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 12px;
+    }
+    @media (max-width: 980px){ .twoCol{ grid-template-columns: 1fr; } }
+
+    .list{
+      margin: 10px 0 0;
+      padding: 0;
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+    }
+    .li{
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      padding: 12px;
+      color: rgba(255,255,255,.80);
+      display:flex; gap: 12px; align-items:flex-start;
+    }
+    .li b{ color: rgba(255,255,255,.92); }
+    .li span{ color: var(--muted); font-size: 13px; line-height: 1.45; display:block; margin-top: 2px; }
+
+    .contactGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    @media (max-width: 520px){ .contactGrid{ grid-template-columns: 1fr; } }
+
+    .input{
+      width:100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.20);
+      color: rgba(255,255,255,.92);
+      padding: 12px 12px;
+      outline:none;
+      font-size: 13.5px;
+    }
+    textarea.input{ min-height: 110px; resize: vertical; }
+    .input:focus{
+      border-color: rgba(124,58,237,.55);
+      box-shadow: 0 0 0 4px rgba(124,58,237,.12);
+    }
+
+    .foot{
+      margin-top: 18px;
+      color: rgba(255,255,255,.55);
+      font-size: 12px;
+      text-align:center;
+    }
+
+    /* ===== Floating blobs ===== */
+    .blobs{
+      position:absolute; inset:0;
+      pointer-events:none;
+      z-index:0;
+      overflow:hidden;
+    }
+    .blob{
+      position:absolute;
+      width: 520px; height: 520px;
+      opacity: .30;
+      filter: blur(0px);
+      transform: translate3d(0,0,0);
+      animation: floaty 12s ease-in-out infinite;
+    }
+    .blob:nth-child(1){ left:-220px; top:-220px; animation-duration: 14s; }
+    .blob:nth-child(2){ right:-240px; top:-240px; animation-duration: 16s; opacity:.24; }
+    .blob:nth-child(3){ left:-260px; bottom:-260px; animation-duration: 18s; opacity:.20; }
+    .blob:nth-child(4){ right:-240px; bottom:-240px; animation-duration: 15s; opacity:.18; }
+
+    @keyframes floaty{
+      0%{ transform: translate(0px, 0px) rotate(0deg) scale(1); }
+      50%{ transform: translate(18px, 24px) rotate(12deg) scale(1.04); }
+      100%{ transform: translate(-12px, 8px) rotate(-10deg) scale(.98); }
+    }
+
+    /* ===== Reveal animation ===== */
+    .reveal{
+      opacity:0;
+      transform: translateY(14px);
+      filter: blur(6px);
+      transition: opacity .7s ease, transform .7s ease, filter .7s ease;
+    }
+    .reveal.in{
+      opacity:1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+
+    /* ===== Small utility ===== */
+    .muted{ color: var(--muted); }
+    .sep{
+      height: 1px;
+      background: rgba(255,255,255,.10);
+      margin: 14px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg"></div>
+  <div class="grain"></div>
+  <div class="aura" id="aura"></div>
+
+  <header>
+    <nav class="nav">
+      <a class="brand" href="#top">
+        <div class="mark" aria-hidden="true"></div>
+        <div>
+          <b>Rojin Pourkhomami</b>
+          <span>Product Designer • Systems + Storytelling</span>
+        </div>
+      </a>
+      <div class="navlinks">
+        <a class="chip" href="#work">Work</a>
+        <a class="chip" href="#about">About</a>
+        <a class="chip" href="#contact">Contact</a>
+        <a class="chip primary" href="#contact" id="magneticCTA">Let’s build</a>
+      </div>
+    </nav>
+  </header>
+
+  <div class="wrap" id="top">
+    <div class="hero">
+      <div class="panel heroMain reveal">
+        <div class="blobs" aria-hidden="true">
+          <!-- Simple SVG blobs (no external assets) -->
+          <svg class="blob" viewBox="0 0 200 200" style="color: var(--a);">
+            <path fill="currentColor" d="M43.6,-56.9C56.7,-47.1,67.4,-33.6,71.2,-18.3C75,-3,71.8,14.1,63.1,28.2C54.4,42.2,40.1,53.2,25,60.6C9.8,67.9,-6.2,71.5,-22.8,69.1C-39.4,66.7,-56.6,58.4,-65.7,44.7C-74.8,31,-75.8,11.9,-71.6,-5.1C-67.4,-22.2,-58.1,-37.2,-45.2,-47.1C-32.2,-56.9,-16.1,-61.5,0.6,-62.2C17.2,-63,34.5,-60.8,43.6,-56.9Z" transform="translate(100 100)" />
+          </svg>
+          <svg class="blob" viewBox="0 0 200 200" style="color: var(--b);">
+            <path fill="currentColor" d="M39.4,-56.1C51.5,-47.1,62.1,-38.3,67.9,-26.6C73.7,-14.9,74.7,-0.2,71.3,13.6C67.9,27.4,60.1,40.4,49.1,50.9C38,61.4,23.6,69.4,8.3,71.7C-6.9,74.1,-22.9,70.9,-37.2,63.5C-51.6,56.1,-64.3,44.6,-70.5,30C-76.7,15.4,-76.3,-2.3,-70.4,-17.4C-64.5,-32.5,-53,-45.1,-39.8,-53.8C-26.7,-62.5,-13.4,-67.3,0,-67.3C13.5,-67.4,27,-62.9,39.4,-56.1Z" transform="translate(100 100)" />
+          </svg>
+          <svg class="blob" viewBox="0 0 200 200" style="color: var(--d);">
+            <path fill="currentColor" d="M41.9,-60.6C54.8,-52.6,66.1,-41.6,71.2,-28.1C76.3,-14.5,75.2,1.6,70.3,16.3C65.4,31,56.6,44.2,44.4,54.6C32.1,65,16.1,72.7,0.2,72.4C-15.8,72.2,-31.6,64.1,-44.7,53.1C-57.9,42.1,-68.4,28.1,-71.7,12.5C-75,-3.1,-71.1,-20.2,-61.5,-33.2C-51.8,-46.3,-36.4,-55.3,-20.9,-62.9C-5.4,-70.5,10.2,-76.8,24.8,-73.6C39.5,-70.4,53.1,-57.8,41.9,-60.6Z" transform="translate(100 100)" />
+          </svg>
+          <svg class="blob" viewBox="0 0 200 200" style="color: var(--c);">
+            <path fill="currentColor" d="M46.7,-54.9C60.7,-44.8,72.3,-30.1,74.7,-14.1C77.2,1.8,70.6,19.1,59.7,33.1C48.8,47.2,33.6,58.1,16.8,63.9C-0.1,69.8,-18.6,70.6,-34.5,64.4C-50.4,58.2,-63.7,45.1,-70.3,29.4C-76.8,13.7,-76.6,-4.5,-71.1,-20.6C-65.7,-36.7,-55,-50.8,-41.4,-60.6C-27.9,-70.5,-13.9,-76,1,-77.2C15.9,-78.4,31.8,-75,46.7,-54.9Z" transform="translate(100 100)" />
+          </svg>
+        </div>
+
+        <div class="kicker"><span class="dot"></span> Available for product + brand work</div>
+
+        <h1>
+          Hi, I’m <span class="gradText">Rojin Pourkhomami</span> —
+          I design playful, high-clarity products that feel <span class="gradText">alive</span>.
+        </h1>
+
+        <p class="lead">
+          I turn messy problems into clean flows, strong systems, and UI that’s actually fun to use.
+          I love sharp hierarchy, thoughtful motion, and “wow” moments that still ship on time.
+        </p>
+
+        <div class="ctaRow">
+          <a class="btn primary" href="#work" id="magneticWork">
+            View work <span class="arrow"></span>
+          </a>
+          <a class="btn" href="#contact" id="magneticEmail">
+            Contact <span class="arrow"></span>
+          </a>
+          <a class="btn" href="#" id="downloadResume" title="Demo button">
+            Download resume
+          </a>
+        </div>
+
+        <div class="sep"></div>
+        <div class="muted" style="font-size:13px;">
+          Tip: edit projects below (titles, tags, links). Add your case studies later.
+        </div>
+      </div>
+
+      <div class="panel heroSide reveal">
+        <div class="miniCard">
+          <div class="miniTop">
+            <div>
+              <div class="miniTitle">Signature strengths</div>
+              <div class="miniText">Structure + emotion — systems with style.</div>
+            </div>
+            <div class="badge">2026</div>
+          </div>
+          <div class="pillRow">
+            <span class="pill">Product strategy</span>
+            <span class="pill">UX flows</span>
+            <span class="pill">Design systems</span>
+            <span class="pill">Prototyping</span>
+            <span class="pill">Motion UI</span>
+          </div>
+        </div>
+
+        <div class="miniCard">
+          <div class="miniTop">
+            <div>
+              <div class="miniTitle">Tools</div>
+              <div class="miniText">Figma • Framer • Webflow • Notion • Adobe</div>
+            </div>
+            <div class="badge">Daily</div>
+          </div>
+          <div class="pillRow">
+            <span class="pill">Components</span>
+            <span class="pill">Tokens</span>
+            <span class="pill">Variants</span>
+            <span class="pill">Auto-layout</span>
+          </div>
+        </div>
+
+        <div class="miniCard">
+          <div class="miniTop">
+            <div>
+              <div class="miniTitle">Vibe</div>
+              <div class="miniText">Minimal base + spicy details (shapes, texture, motion).</div>
+            </div>
+            <div class="badge">Fun</div>
+          </div>
+          <div class="pillRow">
+            <span class="pill">Bold type</span>
+            <span class="pill">Soft glow</span>
+            <span class="pill">Kinetic shapes</span>
+            <span class="pill">Micro-interactions</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="panel reveal" id="work">
+      <div class="sectionTitle">
+        <div>
+          <h2>Selected work</h2>
+          <p>Three case study-style cards (swap content + add links).</p>
+        </div>
+        <div class="muted" style="font-size:12px;">Hover cards for tilt ✨</div>
+      </div>
+
+      <div class="projects">
+        <article class="card tilt" data-link="#">
+          <div class="thumb"></div>
+          <h3>Creator Community App</h3>
+          <p>End-to-end UX: onboarding, profiles, discovery, and event flows — designed for speed + delight.</p>
+          <div class="meta">
+            <span class="tag">UX</span><span class="tag">UI</span><span class="tag">Prototyping</span><span class="tag">Design system</span>
+          </div>
+          <div class="actions">
+            <a class="btn" href="#" data-open>Read case study <span class="arrow"></span></a>
+            <a class="btn" href="#" data-open>Prototype <span class="arrow"></span></a>
+          </div>
+        </article>
+
+        <article class="card tilt" data-link="#">
+          <div class="thumb"></div>
+          <h3>Marketplace Checkout Redesign</h3>
+          <p>Reduced friction with clearer hierarchy, smarter defaults, and micro-motion for confidence.</p>
+          <div class="meta">
+            <span class="tag">Conversion</span><span class="tag">IA</span><span class="tag">Usability</span>
+          </div>
+          <div class="actions">
+            <a class="btn" href="#" data-open>Read case study <span class="arrow"></span></a>
+            <a class="btn" href="#" data-open>Before/After <span class="arrow"></span></a>
+          </div>
+        </article>
+
+        <article class="card tilt" data-link="#">
+          <div class="thumb"></div>
+          <h3>Design System Sprint</h3>
+          <p>Tokenized styles + components, clear usage guidelines, and a foundation that scales across teams.</p>
+          <div class="meta">
+            <span class="tag">Tokens</span><span class="tag">Components</span><span class="tag">Documentation</span>
+          </div>
+          <div class="actions">
+            <a class="btn" href="#" data-open>Read case study <span class="arrow"></span></a>
+            <a class="btn" href="#" data-open>System overview <span class="arrow"></span></a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel reveal" id="about">
+      <div class="sectionTitle">
+        <div>
+          <h2>About</h2>
+          <p>A little more context + how I work.</p>
+        </div>
+      </div>
+
+      <div class="twoCol">
+        <div>
+          <p class="lead" style="margin-top:0;">
+            I’m a product designer who loves building experiences that are clean, expressive, and intentional.
+            I care about the full loop: <span class="gradText">research → structure → visual system → motion → polish</span>.
+            My superpower is making complex things feel simple without losing personality.
+          </p>
+
+          <ul class="list">
+            <li class="li">
+              <div class="badge">01</div>
+              <div>
+                <b>Clarity first</b>
+                <span>Define the job-to-be-done, map user journeys, and design a hierarchy that reads instantly.</span>
+              </div>
+            </li>
+            <li class="li">
+              <div class="badge">02</div>
+              <div>
+                <b>Systems mindset</b>
+                <span>Build components + rules so the product stays consistent as it grows.</span>
+              </div>
+            </li>
+            <li class="li">
+              <div class="badge">03</div>
+              <div>
+                <b>Delight that ships</b>
+                <span>Motion and texture are intentional — micro-interactions that support usability, not distract.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="miniCard">
+            <div class="miniTitle">Quick facts</div>
+            <div class="miniText">
+              Based in NYC • Open to product design + product strategy roles • Available for freelance.
+            </div>
+            <div class="pillRow">
+              <span class="pill">B2C</span>
+              <span class="pill">B2B</span>
+              <span class="pill">Mobile</span>
+              <span class="pill">Web</span>
+              <span class="pill">0→1</span>
+              <span class="pill">Iteration</span>
+            </div>
+          </div>
+
+          <div class="miniCard" style="margin-top:12px;">
+            <div class="miniTitle">Now</div>
+            <div class="miniText">
+              Building a portfolio with playful motion + clean UX. (This template is yours—customize everything.)
+            </div>
+            <div class="sep"></div>
+            <a class="btn primary" href="#work" id="magneticBack">Back to work <span class="arrow"></span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel reveal" id="contact">
+      <div class="sectionTitle">
+        <div>
+          <h2>Contact</h2>
+          <p>Simple form (demo) + copy-to-clipboard email button.</p>
+        </div>
+      </div>
+
+      <div class="twoCol">
+        <div>
+          <div class="contactGrid">
+            <input class="input" placeholder="Name" id="name" />
+            <input class="input" placeholder="Email" id="email" />
+          </div>
+          <div style="margin-top:10px;">
+            <textarea class="input" placeholder="Message" id="message"></textarea>
+          </div>
+          <div class="ctaRow" style="margin-top:12px;">
+            <button class="btn primary" id="sendBtn">Send message</button>
+            <button class="btn" id="copyEmail">Copy email</button>
+            <a class="btn" href="#top">Back to top</a>
+          </div>
+          <div class="muted" id="status" style="margin-top:10px; font-size:13px;"></div>
+        </div>
+
+        <div>
+          <div class="miniCard">
+            <div class="miniTitle">Let’s collaborate</div>
+            <div class="miniText">
+              If you want a product that’s elegant, fast, and a little magical — I’m in.
+            </div>
+            <div class="pillRow">
+              <span class="pill">Pitch decks → prototypes</span>
+              <span class="pill">Design systems</span>
+              <span class="pill">UX audits</span>
+              <span class="pill">Landing pages</span>
+            </div>
+            <div class="sep"></div>
+            <div class="miniText">
+              Replace with your real links:
+              <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+                <a class="chip" href="#" id="linkLinkedIn">LinkedIn</a>
+                <a class="chip" href="#" id="linkPortfolio">Portfolio</a>
+                <a class="chip" href="#" id="linkDribbble">Dribbble</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="foot">© <span id="year"></span> Rojin Pourkhomami — built with HTML/CSS/JS</div>
+    </section>
+  </div>
+
+  <script>
+    // ===== Cursor aura follow =====
+    const aura = document.getElementById("aura");
+    let mx = window.innerWidth * 0.5, my = window.innerHeight * 0.3;
+    let ax = mx, ay = my;
+
+    window.addEventListener("mousemove", (e) => {
+      mx = e.clientX; my = e.clientY;
+    }, { passive: true });
+
+    function animateAura(){
+      // smooth follow
+      ax += (mx - ax) * 0.09;
+      ay += (my - ay) * 0.09;
+      aura.style.left = ax + "px";
+      aura.style.top = ay + "px";
+      requestAnimationFrame(animateAura);
+    }
+    animateAura();
+
+    // ===== Scroll reveal =====
+    const revealEls = document.querySelectorAll(".reveal");
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) en.target.classList.add("in");
+      });
+    }, { threshold: 0.14 });
+    revealEls.forEach(el => io.observe(el));
+
+    // ===== Tilt cards =====
+    const tiltCards = document.querySelectorAll(".tilt");
+    tiltCards.forEach((card) => {
+      let rect;
+
+      function onMove(e){
+        rect = rect || card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+
+        const rx = (y - 0.5) * -10;
+        const ry = (x - 0.5) * 12;
+
+        card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-2px)`;
+      }
+      function onLeave(){
+        rect = null;
+        card.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg) translateY(0px)";
+      }
+
+      card.addEventListener("mousemove", onMove);
+      card.addEventListener("mouseleave", onLeave);
+    });
+
+    // ===== Magnetic buttons =====
+    const magnetic = (el) => {
+      let r;
+      function move(e){
+        r = r || el.getBoundingClientRect();
+        const dx = e.clientX - (r.left + r.width/2);
+        const dy = e.clientY - (r.top + r.height/2);
+        el.style.transform = `translate(${dx * 0.12}px, ${dy * 0.12}px)`;
+      }
+      function reset(){
+        r = null;
+        el.style.transform = "translate(0px, 0px)";
+      }
+      el.addEventListener("mousemove", move);
+      el.addEventListener("mouseleave", reset);
+    };
+
+    ["magneticCTA","magneticWork","magneticEmail","magneticBack"].forEach(id=>{
+      const el = document.getElementById(id);
+      if (el) magnetic(el);
+    });
+
+    // ===== Demo "Download resume" =====
+    document.getElementById("downloadResume").addEventListener("click", (e) => {
+      e.preventDefault();
+      alert("Swap this with your real resume link (PDF). Example: <a href='resume.pdf' download>Download</a>.");
+    });
+
+    // ===== Demo form send =====
+    const status = document.getElementById("status");
+    document.getElementById("sendBtn").addEventListener("click", () => {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const msg = document.getElementById("message").value.trim();
+
+      if (!name || !email || !msg) {
+        status.textContent = "Please fill out all fields ✨";
+        return;
+      }
+      status.textContent = "Nice. This is a demo form — wire it to Formspree/Netlify Forms later.";
+      // reset
+      document.getElementById("message").value = "";
+    });
+
+    // ===== Copy email =====
+    const yourEmail = "rojin@example.com"; // <-- replace with your real email
+    document.getElementById("copyEmail").addEventListener("click", async () => {
+      try{
+        await navigator.clipboard.writeText(yourEmail);
+        status.textContent = `Copied: ${yourEmail}`;
+      }catch{
+        status.textContent = `Couldn’t copy. Your email: ${yourEmail}`;
+      }
+    });
+
+    // ===== Replace social links (demo) =====
+    const linkMap = {
+      linkLinkedIn: "https://www.linkedin.com/",
+      linkPortfolio: "#top",
+      linkDribbble: "https://dribbble.com/"
+    };
+    Object.entries(linkMap).forEach(([id, url])=>{
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.setAttribute("href", url);
+      el.addEventListener("click", (e)=>{
+        if (url === "#top") return;
+        // allow navigation for real URLs
+      });
+    });
+
+    // ===== Buttons inside cards open (demo) =====
+    document.querySelectorAll("[data-open]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        alert("Add your real case study / prototype links here.");
+      });
+    });
+
+    // ===== Footer year =====
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // ===== Tiny parallax on scroll (pan background a bit) =====
+    const bg = document.querySelector(".bg");
+    window.addEventListener("scroll", () => {
+      const y = window.scrollY || 0;
+      bg.style.transform = `translate3d(0, ${y * 0.03}px, 0)`;
+    }, { passive: true });
+  </script>
+</body>
+</html>
